@@ -1,0 +1,17 @@
+*.crt
+*.key
+*.pem
+*.csr
+*.csr.pem
+*.csr.key
+*.csr.crt
+*.csr.pem
+*.csr.key
+*.csr.crt
+*.srl
+*.srl.pem
+*.srl.key
+*.srl.crt
+*.srl.pem
+*.srl.key
+*.srl.crt
