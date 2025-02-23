@@ -19,7 +19,7 @@ func getTLSConfig() *tls.Config {
 		PreferServerCipherSuites: true, // サーバーの暗号スイートを優先
 		GetConfigForClient: func(clientHello *tls.ClientHelloInfo) (*tls.Config, error) {
 			// どの暗号スイートが選択されたかを確認
-			log.Printf("Client connected with TLS version: %x, Cipher Suite: %x",
+			log.Printf("🚀 クライアント接続: TLS version: %x, Cipher Suite: %x",
 				clientHello.SupportedVersions, clientHello.CipherSuites)
 			return nil, nil
 		},
