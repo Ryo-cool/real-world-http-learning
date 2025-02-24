@@ -10,9 +10,8 @@ import (
 	"time"
 )
 
-func main() {
-
-	// サーバーの証明書を読み込む
+func getTLSConfig(tlsVersion uint16) *tls.Config {
+	// CA証明書を読み込む
 	cert, err := os.ReadFile("certs/server.crt")
 	if err != nil {
 		log.Fatal("🚨 サーバーの証明書を読み込めませんでした。", err)
@@ -24,12 +23,18 @@ func main() {
 		log.Fatal("🚨 CA証明書を信頼できませんでした。")
 	}
 
-	// TLS1.3のみを使用する。
-	tlsConfig := &tls.Config{
-		MinVersion: tls.VersionTLS13,
+	return &tls.Config{
+		MinVersion: tlsVersion,
 		RootCAs:    caCertPool, // CA証明書を信頼するよう設定
 	}
+}
 
+func main() {
+
+	// TLSのバージョン指定(値をバージョン比較で指定)
+	tlsConfig := getTLSConfig(tls.VersionTLS13)
+
+	// HTTPトランスポートを作成
 	tr := &http.Transport{
 		TLSClientConfig: tlsConfig,
 	}
@@ -39,12 +44,15 @@ func main() {
 		Timeout:   10 * time.Second, // タイムアウト設定
 	}
 
+	start := time.Now()
 	// サーバーにGETリクエストを送信
 	resp, err := client.Get("https://localhost:8443")
 	if err != nil {
 		log.Fatal("🚨 サーバーに接続できませんでした。", err)
 	}
 	defer resp.Body.Close()
+
+	elapsed := time.Since(start)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -53,4 +61,6 @@ func main() {
 	// レスポンスのステータスコードを確認
 	log.Printf("Response status: %d", resp.StatusCode)
 	log.Printf("Response body: %s", string(body))
+	// ハンドシェイク時間を表示
+	log.Printf("🚀 ハンドシェイク時間: %s", elapsed)
 }
